@@ -11,9 +11,7 @@ int main(void)
 
     op_new_tree(&tree);
 
-    tree_text_dump(&tree);
     errors = tree_insert(&tree, tree.root, TREE_NODE_BRANCH_LEFT, "abo");
-    tree_text_dump(&tree);
 
     if (errors)
     {
@@ -22,6 +20,16 @@ int main(void)
     }
 
     tree_dump(&tree);
+
+    size_t j = 0;
+    for (TreeNode * i = tree.root; j < 10; i = i->right, j++)
+    {
+        if (errors = tree_insert(&tree, i, TREE_NODE_BRANCH_RIGHT, "lol"))
+        {
+            return errors;
+        }
+        tree_dump(&tree);
+    }
 
     op_delete_tree(&tree);
 

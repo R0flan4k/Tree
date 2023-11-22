@@ -3,9 +3,8 @@
 
     #include <stdio.h>
 
-    const size_t MAX_STR_SIZE = 64;
 
-    typedef char Elem_t [MAX_STR_SIZE];
+    typedef char * Elem_t ;
     typedef int Error_t;
 
     #define ELEM_SPEC "%s"
@@ -37,6 +36,7 @@
     };
 
     extern const char * TREE_DUMP_FILE_NAME;
+    const size_t MAX_STR_SIZE = 64;
 
     Error_t op_new_tree(Tree * tree);
     Error_t op_delete_tree(Tree * tree);
