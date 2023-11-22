@@ -11,8 +11,9 @@ int main(void)
 
     op_new_tree(&tree);
 
+    tree_text_dump(&tree);
     errors = tree_insert(&tree, tree.root, TREE_NODE_BRANCH_LEFT, "abo");
-    errors = tree_insert(&tree, tree.root, TREE_NODE_BRANCH_RIGHT, "lol");
+    tree_text_dump(&tree);
 
     if (errors)
     {

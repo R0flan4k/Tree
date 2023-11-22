@@ -18,6 +18,7 @@ static size_t tree_free_iternal(TreeNode * node, size_t * count);
 static void print_tree_nodes(const TreeNode * node, FILE * fp);
 static void print_tree_edges(const TreeNode * node, FILE * fp);
 static Error_t tree_create_node(Tree * tree, TreeNode * * node_ptr);
+static void print_text_nodes(const TreeNode * main_node);
 
 
 static void op_elem_assigment(Elem_t * dst, Elem_t const src)
@@ -176,8 +177,12 @@ Error_t tree_insert(Tree * tree, TreeNode * node, TreeNodeBranches mode, const E
                 return errors;
             }
 
+            printf("\tLeft : %p\n", node->left);
+            printf("\tRight : %p\n", node->right);
             if (errors = tree_create_node(tree, &node->left))
                 return errors;
+            printf("\tLeft : %p\n", node->left);
+            printf("\tRight : %p\n", node->right);
             op_elem_assigment(&node->left->value, value);
 
             break;
@@ -331,4 +336,37 @@ static void print_tree_edges(const TreeNode * node, FILE * fp)
         fprintf(fp, "    node%p:<r> -> node%p;\n", node, node->right);
         print_tree_edges(node->right, fp);
     }
+}
+
+
+void tree_text_dump(const Tree * tree)
+{
+    MY_ASSERT(tree);
+
+    printf("---------TREE_DUMP----------\n"
+           "Tree[%p]:\n", tree);
+    print_text_nodes(tree->root);
+    printf("\r\tsize = %zd\n", tree->size);
+    printf("----------------------------\n");
+
+}
+
+
+static void print_text_nodes(const TreeNode * main_node)
+{
+    MY_ASSERT(main_node);
+
+    printf("\tNode[%p]\n", main_node);
+    if (main_node->left)
+    {
+        printf("\r\tLeft:\n\t");
+        print_text_nodes(main_node->left);
+    }
+    if (main_node->right)
+    {
+        printf("\r\tRight:\n\t");
+        print_text_nodes(main_node->right);
+    }
+
+    return;
 }
