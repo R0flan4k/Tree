@@ -4,7 +4,7 @@
     #include <stdio.h>
 
 
-    typedef char * Elem_t ;
+    typedef char * Tree_t ;
     typedef int Error_t;
 
     #define ELEM_SPEC "%s"
@@ -25,7 +25,7 @@
     };
 
     struct TreeNode {
-        Elem_t value;
+        Tree_t value;
         TreeNode * right;
         TreeNode * left;
     };
@@ -38,10 +38,10 @@
     extern const char * TREE_DUMP_FILE_NAME;
     const size_t MAX_STR_SIZE = 64;
 
-    Error_t op_new_tree(Tree * tree);
+    Error_t op_new_tree(Tree * tree, const Tree_t root_value);
     Error_t op_delete_tree(Tree * tree);
     Error_t tree_vtor(Tree * tree);
-    Error_t tree_insert(Tree * tree, TreeNode * node, TreeNodeBranches mode, const Elem_t value);
+    Error_t tree_insert(Tree * tree, TreeNode * node, TreeNodeBranches mode, const Tree_t value);
     Error_t tree_delete_branch(Tree * tree, TreeNode * node);
     void tree_dump_iternal(const Tree * tree,
                            const char * tree_name, const char * func,

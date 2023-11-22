@@ -9,7 +9,7 @@ int main(void)
     Tree tree = {};
     Error_t errors = 0;
 
-    op_new_tree(&tree);
+    op_new_tree(&tree, "abobus?");
 
     errors = tree_insert(&tree, tree.root, TREE_NODE_BRANCH_LEFT, "abo");
 
