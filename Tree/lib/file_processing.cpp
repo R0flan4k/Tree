@@ -1,19 +1,19 @@
 #include <stdio.h>
-#include <sys\stat.h>
+// #include <sys\stat.h>
 
 #include "file_processing.h"
 #include "my_assert.h"
 
 
-long get_file_size(FILE * fp)
-{
-    struct stat buffer = {};
+// long get_file_size(FILE * fp)
+// {
+//     struct stat buffer = {};
 
-    if (fstat(fileno(fp), &buffer))
-        return (long) NULL;
+//     if (fstat(fileno(fp), &buffer))
+//         return (long) NULL;
 
-    return buffer.st_size;
-}
+//     return buffer.st_size;
+// }
 
 
 FILE * file_open(const char * file_name, const char * mode)
