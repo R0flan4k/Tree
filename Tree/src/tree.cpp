@@ -8,20 +8,20 @@
 const char * TREE_DUMP_FILE_NAME = "./graphviz/tree_dump";
 
 const size_t TRASH_VALUE = 0xAB1BA5;
-const Elem_t TRASH_ELEM_VALUE = "nillsukablyat";
+const Tree_t TRASH_ELEM_VALUE = "nill";
 const size_t BUFFER_SIZE = 256;
 
-static void op_elem_assigment(Elem_t * dst, Elem_t const src);
-static int op_elem_comparison(const Elem_t * elem1, const Elem_t * elem2);
+static void op_elem_assigment(Tree_t * dst, Tree_t const src);
+// static int op_elem_comparison(const Tree_t * elem1, const Tree_t * elem2);
 static size_t tree_free(TreeNode * main_node);
 static size_t tree_free_iternal(TreeNode * node, size_t * count);
 static void print_tree_nodes(const TreeNode * node, FILE * fp);
 static void print_tree_edges(const TreeNode * node, FILE * fp);
-static Error_t tree_create_node(Tree * tree, TreeNode * * node_ptr);
+static TError_t tree_create_node(Tree * tree, TreeNode * * node_ptr);
 static void print_text_nodes(const TreeNode * main_node);
 
 
-static void op_elem_assigment(Elem_t * dst, Elem_t const src)
+static void op_elem_assigment(Tree_t * dst, Tree_t const src)
 {
     MY_ASSERT(dst);
 
@@ -29,20 +29,32 @@ static void op_elem_assigment(Elem_t * dst, Elem_t const src)
 }
 
 
-static int op_elem_comparison(const Elem_t * elem1, const Elem_t * elem2)
-{
-    MY_ASSERT(elem1);
-    MY_ASSERT(elem2);
+// static int op_elem_comparison(const Tree_t * elem1, const Tree_t * elem2)
+// {
+//     MY_ASSERT(elem1);
+//     MY_ASSERT(elem2);
 
-    return strcmp(*elem1, *elem2);
+//     return strcmp(*elem1, *elem2);
+// }
+
+
+TError_t tree_set_node_value(TreeNode * node, const Tree_t value)
+{
+    MY_ASSERT(node);
+
+    TError_t errors = 0;
+
+    op_elem_assigment(&node->value, value);
+
+    return errors;
 }
 
 
-Error_t op_new_tree(Tree * tree)
+TError_t op_new_tree(Tree * tree, const Tree_t root_value)
 {
     MY_ASSERT(tree);
 
-    Error_t errors = 0;
+    TError_t errors = 0;
 
     if (!tree_vtor(tree))
     {
@@ -50,7 +62,7 @@ Error_t op_new_tree(Tree * tree)
         return errors;
     }
 
-    if ((tree->root = (TreeNode *) calloc(1, sizeof(Elem_t))) == NULL)
+    if ((tree->root = (TreeNode *) calloc(1, sizeof(Tree_t))) == NULL)
     {
         errors |= TREE_ERRORS_CANT_ALLOCATE_MEMORY;
         return errors;
@@ -59,7 +71,15 @@ Error_t op_new_tree(Tree * tree)
 
     tree->root->left = NULL;
     tree->root->right = NULL;
-    op_elem_assigment(&tree->root->value, TRASH_ELEM_VALUE);
+
+    if (!(tree->root->value = (Tree_t) calloc(MAX_STR_SIZE, sizeof(char))))
+    {
+        free(tree->root);
+        errors |= TREE_ERRORS_CANT_ALLOCATE_MEMORY;
+        return errors;
+    }
+
+    op_elem_assigment(&tree->root->value, root_value);
 
     return errors;
 }
@@ -70,9 +90,8 @@ static size_t tree_free(TreeNode * main_node)
     MY_ASSERT(main_node);
 
     size_t count = 0;
-    count = tree_free_iternal(main_node, &count);
 
-    return count;
+    return tree_free_iternal(main_node, &count);
 }
 
 
@@ -91,6 +110,7 @@ static size_t tree_free_iternal(TreeNode * node, size_t * count)
         tree_free_iternal(node->right, count);
     }
 
+    free(node->value);
     free(node);
     count++;
 
@@ -98,11 +118,11 @@ static size_t tree_free_iternal(TreeNode * node, size_t * count)
 }
 
 
-Error_t op_delete_tree(Tree * tree)
+TError_t op_delete_tree(Tree * tree)
 {
     MY_ASSERT(tree);
 
-    Error_t errors = 0;
+    TError_t errors = 0;
 
     if (tree->root == NULL)
     {
@@ -118,11 +138,11 @@ Error_t op_delete_tree(Tree * tree)
 }
 
 
-Error_t tree_vtor(Tree * tree)
+TError_t tree_vtor(Tree * tree)
 {
     MY_ASSERT(tree);
 
-    Error_t errors = 0;
+    TError_t errors = 0;
 
     if (tree->size == 0)
         errors |= TREE_ERRORS_INVALID_SIZE;
@@ -134,12 +154,12 @@ Error_t tree_vtor(Tree * tree)
 }
 
 
-static Error_t tree_create_node(Tree * tree, TreeNode * * node_ptr)
+static TError_t tree_create_node(Tree * tree, TreeNode * * node_ptr)
 {
     MY_ASSERT(tree);
     MY_ASSERT(!*node_ptr);
 
-    Error_t errors = 0;
+    TError_t errors = 0;
 
     if (!(*node_ptr = (TreeNode *) calloc(1, sizeof(TreeNode))))
     {
@@ -149,6 +169,15 @@ static Error_t tree_create_node(Tree * tree, TreeNode * * node_ptr)
 
     (*node_ptr)->left = NULL;
     (*node_ptr)->right = NULL;
+
+    if (!((*node_ptr)->value = (Tree_t) calloc(MAX_STR_SIZE, sizeof(char))))
+    {
+        free(*node_ptr);
+        errors |= TREE_ERRORS_CANT_ALLOCATE_MEMORY;
+
+        return errors;
+    }
+
     op_elem_assigment(&(*node_ptr)->value, TRASH_ELEM_VALUE);
 
     tree->size++;
@@ -157,11 +186,11 @@ static Error_t tree_create_node(Tree * tree, TreeNode * * node_ptr)
 }
 
 
-Error_t tree_insert(Tree * tree, TreeNode * node, TreeNodeBranches mode, const Elem_t value)
+TError_t tree_insert(Tree * tree, TreeNode * node, TreeNodeBranches mode, const Tree_t value)
 {
     MY_ASSERT(node);
 
-    Error_t errors = 0;
+    TError_t errors = 0;
 
     if (errors = tree_vtor(tree))
     {
@@ -177,12 +206,9 @@ Error_t tree_insert(Tree * tree, TreeNode * node, TreeNodeBranches mode, const E
                 return errors;
             }
 
-            printf("\tLeft : %p\n", node->left);
-            printf("\tRight : %p\n", node->right);
             if (errors = tree_create_node(tree, &node->left))
                 return errors;
-            printf("\tLeft : %p\n", node->left);
-            printf("\tRight : %p\n", node->right);
+
             op_elem_assigment(&node->left->value, value);
 
             break;
@@ -209,12 +235,12 @@ Error_t tree_insert(Tree * tree, TreeNode * node, TreeNodeBranches mode, const E
 }
 
 
-Error_t tree_delete_branch(Tree * tree, TreeNode * node)
+TError_t tree_delete_branch(Tree * tree, TreeNode * node)
 {
     MY_ASSERT(tree);
     MY_ASSERT(node);
 
-    Error_t errors = 0;
+    TError_t errors = 0;
 
     if (errors = tree_vtor(tree))
     {
@@ -249,7 +275,7 @@ void tree_dump_iternal(const Tree * tree,
     char dot_file_name[64] = "";
     make_file_extension(dot_file_name, TREE_DUMP_FILE_NAME, ".dot");
 
-    if (!(fp = file_open(dot_file_name, "wb")))
+    if (!(fp = file_open("./graphviz/tree_dump.dot", "wb")))
     {
         return;
     }
@@ -262,7 +288,7 @@ void tree_dump_iternal(const Tree * tree,
                 "    splines = curved;\n"
                 "    edge[minlen = 3];\n"
                 "    node[shape = record, style = \"rounded\", color = \"#f58eb4\",\n"
-                "        fixedsize = true, height = 1, width = 4, fontsize = 15];\n"
+                "        fixedsize = true, height = 1, width = 6, fontsize = 15];\n"
                 "    {rank = min;\n"
                 "        inv_min [style = invis];\n"
                 "    }\n"
@@ -283,13 +309,13 @@ void tree_dump_iternal(const Tree * tree,
     fclose(fp);
 
     static size_t dumps_count = 0;
-    char png_dump_file_name[BUFFER_SIZE] = "";
+    char png_dump_file_name[64] = "";
     char command_string[BUFFER_SIZE] = "";
     char extension_string[BUFFER_SIZE] = "";
 
     sprintf(extension_string, "%zd.png", dumps_count);
     make_file_extension(png_dump_file_name, TREE_DUMP_FILE_NAME, extension_string);
-    sprintf(command_string, "dot %s -T png -o %s", TREE_DUMP_FILE_NAME, png_dump_file_name);
+    sprintf(command_string, "dot %s -T png -o %s", dot_file_name, png_dump_file_name);
     system(command_string);
 
     dumps_count++;
@@ -303,7 +329,7 @@ static void print_tree_nodes(const TreeNode * node, FILE * fp)
     // printf("printing: %p\n"
     //        "          %p\n"
     //        "          %p\n", node->value, node->left, node->right);
-    fprintf(fp, "    node%p [ label = \"[%p] " ELEM_SPEC " | { <l> left = [%p] | right = [%p] }  }\" ]\n",
+    fprintf(fp, "    node%p [ label = \"{[%p] " TREE_SPEC " | { <l> left[%p] | right[%p]  }}\" ]\n",
             node, node, node->value, node->left, node->right);
             // printf("printed\n");
 

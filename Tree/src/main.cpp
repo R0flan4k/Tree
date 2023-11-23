@@ -7,12 +7,12 @@
 int main(void)
 {
     Tree tree = {};
-    Error_t errors = 0;
+    TError_t errors = 0;
 
-    op_new_tree(&tree);
+    op_new_tree(&tree, "abobus");
 
     tree_text_dump(&tree);
-    errors = tree_insert(&tree, tree.root, TREE_NODE_BRANCH_LEFT, "abo");
+    errors = tree_insert(&tree, tree.root, TREE_NODE_BRANCH_LEFT, 228);
     tree_text_dump(&tree);
 
     if (errors)
