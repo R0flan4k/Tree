@@ -28,6 +28,7 @@
         Tree_t value;
         TreeNode * right;
         TreeNode * left;
+        char BUS[4];
     };
 
     struct Tree {

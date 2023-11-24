@@ -12,7 +12,10 @@ int main(void)
     op_new_tree(&tree, "abobus");
 
     tree_text_dump(&tree);
-    errors = tree_insert(&tree, tree.root, TREE_NODE_BRANCH_LEFT, 228);
+    errors = tree_insert(&tree, tree.root, TREE_NODE_BRANCH_LEFT, "228");
+    errors = tree_insert(&tree, tree.root->left, TREE_NODE_BRANCH_LEFT, "228");
+    errors = tree_insert(&tree, tree.root->left, TREE_NODE_BRANCH_RIGHT, "228");
+    errors = tree_insert(&tree, tree.root, TREE_NODE_BRANCH_RIGHT, "228");
     tree_text_dump(&tree);
 
     if (errors)

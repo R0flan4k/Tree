@@ -69,8 +69,6 @@ TError_t op_new_tree(Tree * tree, const Tree_t root_value)
     }
     tree->size = 1;
 
-    tree->root->left = NULL;
-    tree->root->right = NULL;
 
     if (!(tree->root->value = (Tree_t) calloc(MAX_STR_SIZE, sizeof(char))))
     {
@@ -78,6 +76,9 @@ TError_t op_new_tree(Tree * tree, const Tree_t root_value)
         errors |= TREE_ERRORS_CANT_ALLOCATE_MEMORY;
         return errors;
     }
+
+    tree->root->left = NULL;
+    tree->root->right = NULL;
 
     op_elem_assigment(&tree->root->value, root_value);
 
