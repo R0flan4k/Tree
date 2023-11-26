@@ -3,11 +3,10 @@
 
     #include <stdio.h>
 
-
-    typedef char * Tree_t;
+    typedef const char * Tree_t;
     typedef int TError_t;
 
-    #define TREE_SPEC "%s"
+    #define TREE_SPEC "%p"
     #define tree_dump(tree) tree_dump_iternal((tree), #tree, __func__, __LINE__, __FILE__)
 
     enum TreeErrorsMasks {
@@ -28,7 +27,6 @@
         Tree_t value;
         TreeNode * right;
         TreeNode * left;
-        char BUS[4];
     };
 
     struct Tree {
@@ -43,7 +41,6 @@
     TError_t op_delete_tree(Tree * tree);
     TError_t tree_vtor(Tree * tree);
     TError_t tree_insert(Tree * tree, TreeNode * node, TreeNodeBranches mode, const Tree_t value);
-    TError_t tree_set_node_value(TreeNode * node, const Tree_t value);
     TError_t tree_delete_branch(Tree * tree, TreeNode * node);
     void tree_dump_iternal(const Tree * tree,
                            const char * tree_name, const char * func,

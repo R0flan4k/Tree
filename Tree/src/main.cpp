@@ -9,14 +9,18 @@ int main(void)
     Tree tree = {};
     TError_t errors = 0;
 
-    op_new_tree(&tree, "abobus");
+    op_new_tree(&tree, NULL);
+
+    char string[228] = "abobus?";
 
     tree_text_dump(&tree);
-    errors = tree_insert(&tree, tree.root, TREE_NODE_BRANCH_LEFT, "228");
-    errors = tree_insert(&tree, tree.root->left, TREE_NODE_BRANCH_LEFT, "228");
-    errors = tree_insert(&tree, tree.root->left, TREE_NODE_BRANCH_RIGHT, "228");
-    errors = tree_insert(&tree, tree.root, TREE_NODE_BRANCH_RIGHT, "228");
+    errors = tree_insert(&tree, tree.root, TREE_NODE_BRANCH_LEFT, NULL);
+    errors = tree_insert(&tree, tree.root->left, TREE_NODE_BRANCH_LEFT, NULL);
+    errors = tree_insert(&tree, tree.root->left, TREE_NODE_BRANCH_RIGHT, string);
+    errors = tree_insert(&tree, tree.root, TREE_NODE_BRANCH_RIGHT, NULL);
     tree_text_dump(&tree);
+
+    printf("%p\n\n", tree.root->left->right->value);
 
     if (errors)
     {
@@ -27,6 +31,7 @@ int main(void)
     tree_dump(&tree);
 
     op_delete_tree(&tree);
+    printf("Program successfully completed.\n");
 
     return 0;
 }
